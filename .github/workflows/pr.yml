@@ -1,0 +1,33 @@
+name: PR checks
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Payload import map
+        run: npm run generate:importmap
+        continue-on-error: true
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://localhost:5432/test
+          PAYLOAD_SECRET: ci-secret-minimum-32-chars-long
