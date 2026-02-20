@@ -1,5 +1,19 @@
 {
   "nav": { "jobs": "Jobs", "guides": "Guider", "blog": "Blog" },
+  "guides": {
+    "avgSalary": "Gns. månedsløn",
+    "costOfLiving": "Leveomkostninger",
+    "visaType": "Arbejdsvisum",
+    "topIndustries": "Topbrancher",
+    "citiesIn": "Byer i {country}",
+    "jobsIn": "Jobs i {destination}",
+    "seeAllJobs": "Se alle jobs i {destination} →",
+    "notAvailable": "Guide ikke tilgængelig på dansk",
+    "notAvailableDesc": "Denne guide er endnu ikke oversat til dansk.",
+    "readInEnglish": "Læs på engelsk →",
+    "onThisPage": "På denne side",
+    "otherCountries": "Andre lande"
+  },
   "jobs": {
     "title": "Find job i udlandet",
     "filters": {

@@ -1,5 +1,19 @@
 {
   "nav": { "jobs": "Jobs", "guides": "Guides", "blog": "Blog" },
+  "guides": {
+    "avgSalary": "Avg. Monthly Salary",
+    "costOfLiving": "Cost of Living",
+    "visaType": "Work Visa",
+    "topIndustries": "Top Industries",
+    "citiesIn": "Cities in {country}",
+    "jobsIn": "Jobs in {destination}",
+    "seeAllJobs": "See all jobs in {destination} →",
+    "notAvailable": "Guide not available in Danish",
+    "notAvailableDesc": "This guide has not been translated to Danish yet.",
+    "readInEnglish": "Read in English →",
+    "onThisPage": "On this page",
+    "otherCountries": "Other Countries"
+  },
   "jobs": {
     "title": "Browse Jobs Abroad",
     "filters": {
