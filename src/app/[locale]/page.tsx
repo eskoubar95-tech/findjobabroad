@@ -1,12 +1,34 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { getLocale, getTranslations } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { cn } from '@/lib/utils'
 import type { Country, Job } from '@/payload-types'
+import { websiteJsonLd } from '@/lib/jsonld'
 
 type Props = {
   params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const title =
+    locale === 'da'
+      ? 'Find job i udlandet | findjobabroad.com'
+      : 'Find Jobs Abroad | findjobabroad.com'
+  const description =
+    locale === 'da'
+      ? 'Internationale jobs og landeguider for danskere der søger arbejde i udlandet.'
+      : 'International job listings and country guides for professionals seeking work abroad.'
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { en: '/en', da: '/da', 'x-default': '/en' },
+    },
+  }
 }
 
 function getDestination(job: Job): string {
@@ -49,9 +71,14 @@ export default async function HomePage({ params }: Props) {
     (c): c is Country => locale === 'en' || !!c.name
   )
   const jobs = jobsResult.docs as Job[]
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://findjobabroad.com'
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(baseUrl)) }}
+      />
       <section className="px-4 py-12 md:py-16 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">{t('hero.title')}</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">

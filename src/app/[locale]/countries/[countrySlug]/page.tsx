@@ -4,14 +4,16 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import type { Country, Job } from '@/payload-types'
 import { isVisibleInLocale } from '../_utils'
+import { articleJsonLd } from '@/lib/jsonld'
 
 type Props = {
   params: Promise<{ locale: string; countrySlug: string }>
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, countrySlug } = await params
   const payload = await getPayload({ config })
   const result = await payload.find({
@@ -27,10 +29,21 @@ export async function generateMetadata({ params }: Props) {
     limit: 1,
   })
   const country = result.docs[0] as Country | undefined
-  if (!country?.seo) return {}
+  if (!country) return {}
+  const title = country.seo?.title ?? `Work in ${country.name} | findjobabroad.com`
+  const description =
+    country.seo?.description ?? country.topIndustries ?? `Guide to working in ${country.name}.`
   return {
-    title: country.seo.title ?? undefined,
-    description: country.seo.description ?? undefined,
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}/countries/${countrySlug}`,
+      languages: {
+        en: `/en/countries/${countrySlug}`,
+        da: `/da/countries/${countrySlug}`,
+        'x-default': `/en/countries/${countrySlug}`,
+      },
+    },
   }
 }
 
@@ -96,9 +109,19 @@ export default async function CountryGuidePage({ params }: Props) {
   const allJobs = jobsResult.docs as Job[]
   const visibleJobs = allJobs.filter((j) => isVisibleInLocale(j, locale)).slice(0, 6)
   const otherCountries = otherCountriesResult.docs as Array<{ slug: string; name: string }>
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://findjobabroad.com'
+  const jsonLd = articleJsonLd({
+    title: country.name,
+    description: country.seo?.description ?? undefined,
+    url: `${baseUrl}/${locale}/countries/${countrySlug}`,
+  })
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="mb-6 text-sm text-gray-600">
         <Link href={`/${locale}/countries`} className="hover:underline">
           Countries

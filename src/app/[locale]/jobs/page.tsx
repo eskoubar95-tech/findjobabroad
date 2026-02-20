@@ -1,6 +1,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 import type { Job } from '@/payload-types'
 
 const JOBS_PER_PAGE = 20
@@ -32,6 +33,23 @@ type Props = {
     languages?: string | string[]
     page?: string
   }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const title = locale === 'da' ? 'Find job i udlandet | findjobabroad.com' : 'Browse Jobs Abroad | findjobabroad.com'
+  const description =
+    locale === 'da'
+      ? 'Find jobs i udlandet. Filtrer efter land, jobtype og sprog.'
+      : 'Find jobs abroad. Filter by country, job type and language.'
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}/jobs`,
+      languages: { en: '/en/jobs', da: '/da/jobs', 'x-default': '/en/jobs' },
+    },
+  }
 }
 
 export default async function JobsPage({ params, searchParams }: Props) {

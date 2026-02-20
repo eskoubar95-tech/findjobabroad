@@ -1,7 +1,9 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import type { Job } from '@/payload-types'
+import { jobPostingJsonLd } from '@/lib/jsonld'
 
 function isVisibleInDa(job: Job): boolean {
   const langs = job.requiredLanguages ?? []
@@ -39,6 +41,34 @@ function renderRichText(content: Job['description']): string {
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://findjobabroad.com'
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'jobs',
+    locale: locale as 'en' | 'da',
+    where: { slug: { equals: slug } },
+    depth: 1,
+    limit: 1,
+  })
+  const job = result.docs[0] as Job | undefined
+  if (!job) return {}
+  const country = typeof job.country === 'object' && job.country !== null ? (job.country as { name: string }) : null
+  const countryName = country?.name ?? ''
+  const company = job.company ?? ''
+  const jobType = job.jobType ?? ''
+  return {
+    title: job.seo?.title ?? `${job.title} in ${countryName} | findjobabroad.com`,
+    description: job.seo?.description ?? `${jobType} at ${company} in ${countryName}`,
+    alternates: {
+      canonical: `/${locale}/jobs/${slug}`,
+      languages: { en: `/en/jobs/${slug}`, da: `/da/jobs/${slug}`, 'x-default': `/en/jobs/${slug}` },
+    },
+  }
 }
 
 const EXPIRED_BANNER_EN = 'This job is no longer available.'
@@ -105,6 +135,26 @@ export default async function JobDetailPage({ params }: Props) {
   const isExpired = job.status === 'expired'
   const bodyText = renderRichText(descriptionToRender)
   const bodyParagraphs = bodyText.split(/\n/).filter(Boolean)
+  const cityName =
+    job.city && typeof job.city === 'object' && job.city !== null && 'name' in job.city
+      ? (job.city as { name: string }).name
+      : ''
+  const jsonLd = jobPostingJsonLd(
+    {
+      title: job.title,
+      company: job.company ?? null,
+      description: bodyText,
+      jobType: job.jobType ?? null,
+      salary: job.salary ?? null,
+      postedAt: job.postedAt ?? null,
+      expiresAt: job.expiresAt ?? null,
+      countryName,
+      cityName,
+      slug: job.slug,
+    },
+    BASE_URL,
+    locale
+  )
   const languageList = (job.requiredLanguages as { language?: string | null }[])
     .map((r) => r.language)
     .filter(Boolean)
@@ -112,6 +162,10 @@ export default async function JobDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="mb-6 text-sm text-gray-600">
         <a href={`/${locale}/jobs`} className="hover:underline">Jobs</a>
         {countryName && (
