@@ -23,6 +23,15 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        sync: {
+          Component: '/src/app/(payload)/admin/sync/page#default',
+          path: '/sync',
+          meta: { title: 'Job Sync' },
+        },
+      },
+    },
   },
   collections: [
     Users,

@@ -5,9 +5,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "payload generate:importmap && next build",
+    "build": "payload generate:importmap && node scripts/fix-importmap-sync.js && next build",
     "dev": "next dev",
-    "generate:importmap": "payload generate:importmap",
+    "generate:importmap": "payload generate:importmap && node scripts/fix-importmap-sync.js",
     "generate:types": "payload generate:types",
     "lint": "next lint",
     "payload": "payload",
