@@ -1,3 +1,9 @@
-// T1: No collections — migrations left for T2 when Users/Media are added
-export const migrations: { up: () => Promise<void>; down: () => Promise<void>; name: string }[] =
-  []
+import * as migration_20260220_013255_add_t2_collections from './20260220_013255_add_t2_collections';
+
+export const migrations = [
+  {
+    up: migration_20260220_013255_add_t2_collections.up,
+    down: migration_20260220_013255_add_t2_collections.down,
+    name: '20260220_013255_add_t2_collections'
+  },
+];
