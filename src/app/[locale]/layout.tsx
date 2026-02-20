@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import type { ReactNode } from 'react'
+import { Nav } from '@/components/Nav'
 
 type Props = {
   children: ReactNode
@@ -13,7 +14,8 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      {children}
+      <Nav />
+      <main className="min-h-screen">{children}</main>
     </NextIntlClientProvider>
   )
 }

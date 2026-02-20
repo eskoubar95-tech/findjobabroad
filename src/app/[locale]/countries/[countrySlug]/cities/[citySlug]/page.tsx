@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
 import type { City, Country, Job } from '@/payload-types'
-import { isVisibleInLocale } from '../../_utils'
+import { isVisibleInLocale } from '../../../_utils'
 
 type Props = {
   params: Promise<{ locale: string; countrySlug: string; citySlug: string }>
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props) {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'cities',
-    locale,
+    locale: locale as 'en' | 'da',
     where: {
       and: [
         { slug: { equals: citySlug } },
@@ -41,7 +41,7 @@ export default async function CityGuidePage({ params }: Props) {
 
   const cityResult = await payload.find({
     collection: 'cities',
-    locale,
+    locale: locale as 'en' | 'da',
     where: {
       and: [
         { slug: { equals: citySlug } },
@@ -62,7 +62,7 @@ export default async function CityGuidePage({ params }: Props) {
 
   const jobsResult = await payload.find({
     collection: 'jobs',
-    locale,
+    locale: locale as 'en' | 'da',
     where: {
       and: [
         { 'city.slug': { equals: citySlug } },

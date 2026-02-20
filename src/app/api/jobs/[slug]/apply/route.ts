@@ -27,17 +27,15 @@ export async function GET(
   const userAgent = req.headers.get('user-agent') ?? null
   const referrer = req.headers.get('referer') ?? null
 
-  supabaseAdmin
-    .from('job_clicks')
-    .insert({
+  void Promise.resolve(
+    supabaseAdmin.from('job_clicks').insert({
       job_id: String(job.id),
       job_slug: slug,
       locale,
       user_agent: userAgent,
       referrer,
     })
-    .then(() => {})
-    .catch(() => {})
+  ).catch(() => {})
 
   return NextResponse.redirect(job.affiliateUrl, { status: 302 })
 }

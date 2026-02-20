@@ -51,7 +51,7 @@ export default async function JobDetailPage({ params }: Props) {
 
   const result = await payload.find({
     collection: 'jobs',
-    locale,
+    locale: locale as 'en' | 'da',
     where: { slug: { equals: slug } },
     depth: 1,
     limit: 1,
@@ -85,7 +85,7 @@ export default async function JobDetailPage({ params }: Props) {
 
   const relatedResult = await payload.find({
     collection: 'jobs',
-    locale,
+    locale: locale as 'en' | 'da',
     depth: 1,
     limit: 10,
     where: {
@@ -105,6 +105,10 @@ export default async function JobDetailPage({ params }: Props) {
   const isExpired = job.status === 'expired'
   const bodyText = renderRichText(descriptionToRender)
   const bodyParagraphs = bodyText.split(/\n/).filter(Boolean)
+  const languageList = (job.requiredLanguages as { language?: string | null }[])
+    .map((r) => r.language)
+    .filter(Boolean)
+    .join(', ')
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -142,14 +146,9 @@ export default async function JobDetailPage({ params }: Props) {
             {job.requiredLanguages?.length ? (
               <div>
                 <span className="font-medium text-gray-500">Language(s)</span>
-                <p className="text-gray-900">
-                  {(job.requiredLanguages as { language?: string | null }[])
-                    .map((r) => r.language)
-                    .filter(Boolean)
-                    .join(', ')}
-                </p>
+                <p className="text-gray-900">{languageList}</p>
               </div>
-            )}
+            ) : null}
             {job.salary && (
               <div>
                 <span className="font-medium text-gray-500">Salary</span>

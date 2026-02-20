@@ -54,7 +54,7 @@ export default async function JobsPage({ params, searchParams }: Props) {
   const [countriesResult, jobsResult] = await Promise.all([
     payload.find({
       collection: 'countries',
-      locale,
+      locale: locale as 'en' | 'da',
       depth: 0,
       limit: 200,
       where: { _status: { equals: 'published' } },
@@ -77,10 +77,10 @@ export default async function JobsPage({ params, searchParams }: Props) {
       if (typeParam) and.push({ jobType: { equals: typeParam } })
       return payload.find({
         collection: 'jobs',
-        locale,
+        locale: locale as 'en' | 'da',
         depth: 1,
         limit: 200,
-        where: { and },
+        where: { and } as { and: { status: { equals: string }; _status: { equals: string }; country?: { equals: number }; category?: { equals: string }; jobType?: { equals: string } }[] },
       })
     })(),
   ])

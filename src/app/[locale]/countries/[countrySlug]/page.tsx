@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props) {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'countries',
-    locale,
+    locale: locale as 'en' | 'da',
     where: {
       and: [
         { slug: { equals: countrySlug } },
@@ -41,7 +41,7 @@ export default async function CountryGuidePage({ params }: Props) {
 
   const countryResult = await payload.find({
     collection: 'countries',
-    locale,
+    locale: locale as 'en' | 'da',
     where: {
       and: [
         { slug: { equals: countrySlug } },
@@ -57,7 +57,7 @@ export default async function CountryGuidePage({ params }: Props) {
   const [citiesResult, jobsResult, otherCountriesResult] = await Promise.all([
     payload.find({
       collection: 'cities',
-      locale,
+      locale: locale as 'en' | 'da',
       where: {
         and: [
           { 'country.slug': { equals: countrySlug } },
@@ -68,7 +68,7 @@ export default async function CountryGuidePage({ params }: Props) {
     }),
     payload.find({
       collection: 'jobs',
-      locale,
+      locale: locale as 'en' | 'da',
       where: {
         and: [
           { 'country.slug': { equals: countrySlug } },
@@ -81,7 +81,7 @@ export default async function CountryGuidePage({ params }: Props) {
     }),
     payload.find({
       collection: 'countries',
-      locale,
+      locale: locale as 'en' | 'da',
       where: {
         and: [
           { slug: { not_equals: countrySlug } },
