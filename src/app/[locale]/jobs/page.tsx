@@ -3,6 +3,8 @@ import config from '@payload-config'
 import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 import type { Job } from '@/payload-types'
+import { JobFilterBar } from '@/components/JobFilterBar'
+import { JobCard } from '@/components/JobCard'
 
 const JOBS_PER_PAGE = 20
 const JOB_TYPES = ['full-time', 'part-time', 'seasonal'] as const
@@ -32,6 +34,7 @@ type Props = {
     type?: string
     languages?: string | string[]
     page?: string
+    sort?: string
   }>
 }
 
@@ -58,6 +61,7 @@ export default async function JobsPage({ params, searchParams }: Props) {
   const t = await getTranslations('jobs')
 
   const page = Math.max(1, parseInt(resolved.page ?? '1', 10) || 1)
+  const sortParam = resolved.sort ?? 'recent'
   const countryParam = resolved.country ?? ''
   const categoryParam = resolved.category ?? ''
   const typeParam = resolved.type ?? ''
@@ -104,10 +108,21 @@ export default async function JobsPage({ params, searchParams }: Props) {
   ])
 
   const allJobs = jobsResult.docs as Job[]
-  const visibleJobs =
+  const filteredJobs =
     locale === 'da'
       ? allJobs.filter(isVisibleInDa)
       : allJobs.filter((j) => isVisibleInEn(j, selectedLanguages))
+
+  const visibleJobs = [...filteredJobs].sort((a, b) => {
+    if (sortParam === 'relevance') {
+      const aDate = a.postedAt ?? a.updatedAt ?? ''
+      const bDate = b.postedAt ?? b.updatedAt ?? ''
+      return new Date(bDate).getTime() - new Date(aDate).getTime()
+    }
+    const aUpdated = a.updatedAt ?? ''
+    const bUpdated = b.updatedAt ?? ''
+    return new Date(bUpdated).getTime() - new Date(aUpdated).getTime()
+  })
 
   const totalPages = Math.ceil(visibleJobs.length / JOBS_PER_PAGE)
   const pageJobs = visibleJobs.slice((page - 1) * JOBS_PER_PAGE, page * JOBS_PER_PAGE)
@@ -125,171 +140,124 @@ export default async function JobsPage({ params, searchParams }: Props) {
     if (categoryParam) u.set('category', categoryParam)
     if (typeParam) u.set('type', typeParam)
     if (locale === 'en' && selectedLanguages.length) selectedLanguages.forEach((l) => u.append('languages', l))
+    u.set('sort', sortParam)
     u.set('page', String(nextPage))
     return `/${locale}/jobs?${u.toString()}`
   }
 
+  function buildSortUrl(sortValue: string): string {
+    const u = new URLSearchParams()
+    if (countryParam) u.set('country', countryParam)
+    if (categoryParam) u.set('category', categoryParam)
+    if (typeParam) u.set('type', typeParam)
+    if (locale === 'en' && selectedLanguages.length) selectedLanguages.forEach((l) => u.append('languages', l))
+    u.set('sort', sortValue)
+    u.set('page', '1')
+    return `/${locale}/jobs?${u.toString()}`
+  }
+
+  const countries = countriesResult.docs.map((c: { slug: string; name: string }) => ({
+    slug: c.slug,
+    name: c.name,
+  }))
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">{t('title')}</h1>
+    <div>
+      <div className="bg-navy-900 px-4 py-10 md:px-12">
+        <p className="mb-3 text-xs text-white/40">
+          {locale === 'da' ? 'Hjem › Jobs' : 'Home › Jobs'}
+        </p>
+        <h1 className="font-heading mb-2 text-4xl text-white">{t('title')}</h1>
+        <p className="text-sm text-white/55">
+          {visibleJobs.length}+{' '}
+          {locale === 'da'
+            ? 'internationale muligheder i Europa og ud over'
+            : 'international opportunities across Europe and beyond'}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
-        <aside className="lg:sticky lg:top-4 lg:self-start">
-          <form method="get" className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <div>
-              <label htmlFor="country" className="mb-1 block text-sm font-medium text-gray-700">
-                {t('filters.country')}
-              </label>
-              <select
-                id="country"
-                name="country"
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-                defaultValue={countryParam}
-              >
-                <option value="">{t('filters.allCountries')}</option>
-                {countriesResult.docs.map((c: { slug: string; name: string }) => (
-                  <option key={c.slug} value={c.slug}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+      <JobFilterBar
+        locale={locale}
+        countries={countries}
+        categories={categories}
+        currentCountry={countryParam}
+        currentCategory={categoryParam}
+        currentType={typeParam}
+        currentLanguages={selectedLanguages}
+        totalCount={visibleJobs.length}
+      />
+
+      <div className="mx-auto max-w-7xl px-4 py-7 md:px-12">
+        <div className="mb-6 flex items-center justify-between">
+          <span className="text-sm text-gray-500">{visibleJobs.length} jobs found</span>
+          <div className="flex shrink-0 gap-1">
+            <a
+              href={buildSortUrl('recent')}
+              className={`pill px-4 py-2 text-sm font-medium transition-colors ${
+                sortParam === 'recent'
+                  ? 'bg-navy-900 text-white border border-navy-900'
+                  : 'border border-sand-200 bg-white text-navy-900 hover:bg-sand-50'
+              }`}
+            >
+              {locale === 'da' ? 'Seneste' : 'Most recent'}
+            </a>
+            <a
+              href={buildSortUrl('relevance')}
+              className={`pill px-4 py-2 text-sm font-medium transition-colors ${
+                sortParam === 'relevance'
+                  ? 'bg-navy-900 text-white border border-navy-900'
+                  : 'border border-sand-200 bg-white text-navy-900 hover:bg-sand-50'
+              }`}
+            >
+              {locale === 'da' ? 'Relevans' : 'Relevance'}
+            </a>
+          </div>
+        </div>
+
+        {visibleJobs.length === 0 ? (
+          <p className="text-gray-600">{t('noResults')}</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {pageJobs.map((job) => (
+                <JobCard key={job.id} job={job} locale={locale} />
+              ))}
             </div>
-            <div>
-              <label htmlFor="category" className="mb-1 block text-sm font-medium text-gray-700">
-                {t('filters.category')}
-              </label>
-              <select
-                id="category"
-                name="category"
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-                defaultValue={categoryParam}
-              >
-                <option value="">{t('filters.allCategories')}</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700">
-                {t('filters.type')}
-              </label>
-              <select
-                id="type"
-                name="type"
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-                defaultValue={typeParam}
-              >
-                <option value="">{t('filters.allTypes')}</option>
-                {JOB_TYPES.map((ty) => (
-                  <option key={ty} value={ty}>
-                    {ty}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {locale === 'en' && (
-              <div>
-                <span className="mb-2 block text-sm font-medium text-gray-700">
-                  {t('filters.languages')}
+
+            <nav
+              className="mt-6 flex items-center justify-center gap-2"
+              aria-label="Pagination"
+            >
+              {page > 1 ? (
+                <a
+                  href={buildPageUrl(page - 1)}
+                  className="pill border border-sand-200 bg-white px-4 py-2 text-sm font-medium text-navy-900 hover:bg-sand-50"
+                >
+                  {t('pagination.previous')}
+                </a>
+              ) : (
+                <span className="pill border border-sand-200 bg-sand-100 px-4 py-2 text-sm text-gray-400">
+                  {t('pagination.previous')}
                 </span>
-                <div className="flex flex-wrap gap-2">
-                  {LANGUAGE_OPTIONS.map((lang) => (
-                    <label key={lang} className="inline-flex items-center gap-1 text-sm">
-                      <input
-                        type="checkbox"
-                        name="languages"
-                        value={lang}
-                        defaultChecked={selectedLanguages.includes(lang)}
-                        className="rounded border-gray-300"
-                      />
-                      {lang}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-            <button type="submit" className="w-full rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              Apply filters
-            </button>
-          </form>
-        </aside>
-
-        <main>
-          {visibleJobs.length === 0 ? (
-            <p className="text-gray-600">{t('noResults')}</p>
-          ) : (
-            <>
-              <ul className="space-y-4">
-                {pageJobs.map((job) => (
-                  <li key={job.id}>
-                    <a
-                      href={`/${locale}/jobs/${job.slug}`}
-                      className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow"
-                    >
-                      <h2 className="font-semibold text-gray-900">{job.title}</h2>
-                      <p className="text-sm text-gray-600">
-                        {job.company}
-                        {countryName(job) ? ` · ${countryName(job)}` : ''}
-                      </p>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {job.jobType && (
-                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
-                            {job.jobType}
-                          </span>
-                        )}
-                        {(job.requiredLanguages ?? []).map((r, i) => {
-                          const code = (r as { language?: string | null }).language
-                          return code ? (
-                            <span
-                              key={i}
-                              className="rounded bg-blue-50 px-2 py-0.5 text-xs text-blue-800"
-                            >
-                              {code}
-                            </span>
-                          ) : null
-                        })}
-                      </div>
-                      <p className="mt-2 text-sm text-blue-600">{t('card.viewJob')}</p>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-
-              <nav className="mt-6 flex items-center justify-center gap-4" aria-label="Pagination">
-                {page > 1 ? (
-                  <a
-                    href={buildPageUrl(page - 1)}
-                    className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    {t('pagination.previous')}
-                  </a>
-                ) : (
-                  <span className="rounded border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-400">
-                    {t('pagination.previous')}
-                  </span>
-                )}
-                <span className="text-sm text-gray-600">
-                  Page {page} of {totalPages || 1}
+              )}
+              <span className="text-sm text-gray-600">
+                Page {page} of {totalPages || 1}
+              </span>
+              {page < totalPages ? (
+                <a
+                  href={buildPageUrl(page + 1)}
+                  className="pill border border-sand-200 bg-white px-4 py-2 text-sm font-medium text-navy-900 hover:bg-sand-50"
+                >
+                  {t('pagination.next')}
+                </a>
+              ) : (
+                <span className="pill border border-sand-200 bg-sand-100 px-4 py-2 text-sm text-gray-400">
+                  {t('pagination.next')}
                 </span>
-                {page < totalPages ? (
-                  <a
-                    href={buildPageUrl(page + 1)}
-                    className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    {t('pagination.next')}
-                  </a>
-                ) : (
-                  <span className="rounded border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-400">
-                    {t('pagination.next')}
-                  </span>
-                )}
-              </nav>
-            </>
-          )}
-        </main>
+              )}
+            </nav>
+          </>
+        )}
       </div>
     </div>
   )

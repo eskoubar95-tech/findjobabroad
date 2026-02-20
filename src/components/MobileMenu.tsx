@@ -33,7 +33,7 @@ export function MobileMenu({ links }: { links: readonly NavLink[] }) {
         </svg>
       </button>
       {open && (
-        <div className="fixed inset-0 bg-navy-900 z-[100] flex flex-col p-6 md:hidden">
+        <div className="fixed inset-0 bg-navy-900 z-100 flex flex-col p-6 md:hidden">
           <div className="flex items-center justify-between">
             <span className="font-heading font-extrabold text-xl">
               <span className="text-white">findjob</span>

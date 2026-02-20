@@ -155,147 +155,149 @@ export default async function JobDetailPage({ params }: Props) {
     BASE_URL,
     locale
   )
-  const languageList = (job.requiredLanguages as { language?: string | null }[])
+  const languageCodes = (job.requiredLanguages as { language?: string | null }[])
     .map((r) => r.language)
-    .filter(Boolean)
-    .join(', ')
+    .filter((code): code is string => Boolean(code))
+
+  const expiredText = locale === 'da' ? EXPIRED_BANNER_DA : EXPIRED_BANNER_EN
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <nav className="mb-6 text-sm text-gray-600">
-        <a href={`/${locale}/jobs`} className="hover:underline">Jobs</a>
-        {countryName && (
-          <>
-            {' → '}
-            <a href={`/${locale}/countries/${countrySlug}`} className="hover:underline">{countryName}</a>
-          </>
-        )}
-        {' → '}
-        <span className="text-gray-900">{job.title}</span>
-      </nav>
+      <div
+        className="relative flex h-[280px] items-end px-6 py-8 md:px-12"
+        style={{ background: 'linear-gradient(135deg, #4A90D9, #1A1A2E)' }}
+      >
+        <div>
+          <p className="mb-3 text-xs text-white/50">
+            {locale === 'da' ? 'Jobs' : 'Jobs'} › {countryName} › {job.title}
+          </p>
+          <h1 className="font-heading mb-1 text-3xl font-bold text-white md:text-4xl">
+            {job.title}
+          </h1>
+          <p className="text-base text-white/70">
+            {job.company ?? ''} · {cityName || countryName}
+          </p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_280px]">
+      {isExpired && (
+        <div className="border-b border-amber-200 bg-amber-50 px-6 py-3 text-sm font-medium text-amber-800 md:px-12">
+          {expiredText}
+        </div>
+      )}
+
+      <div className="mx-auto max-w-5xl grid grid-cols-1 gap-10 px-4 py-10 lg:grid-cols-[1fr_320px] md:px-12">
         <main>
-          <header className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
-            <p className="mt-1 text-gray-600">
-              {job.company}
-              {job.city && typeof job.city === 'object' && job.city !== null && 'name' in job.city
-                ? ` · ${(job.city as { name: string }).name}`
-                : ''}
-            </p>
-          </header>
-
-          <div className="mb-6 grid grid-cols-2 gap-3 text-sm">
+          <div className="mb-6 flex flex-wrap gap-2">
             {job.jobType && (
-              <div>
-                <span className="font-medium text-gray-500">Job Type</span>
-                <p className="text-gray-900">{job.jobType}</p>
-              </div>
+              <span className="pill bg-sand-100 px-3 py-1.5 text-sm text-[#4A3728]">
+                {job.jobType}
+              </span>
             )}
-            {job.requiredLanguages?.length ? (
-              <div>
-                <span className="font-medium text-gray-500">Language(s)</span>
-                <p className="text-gray-900">{languageList}</p>
-              </div>
-            ) : null}
-            {job.salary && (
-              <div>
-                <span className="font-medium text-gray-500">Salary</span>
-                <p className="text-gray-900">{job.salary}</p>
-              </div>
-            )}
-            <div>
-              <span className="font-medium text-gray-500">Source</span>
-              <p className="text-gray-900">{job.source === 'affiliate' ? 'Affiliate' : 'Manual'}</p>
+            {languageCodes.map((lang) => (
+              <span
+                key={lang}
+                className="pill bg-primary-100 px-3 py-1.5 text-sm text-primary-600"
+              >
+                🗣 {lang.toUpperCase()}
+              </span>
+            ))}
+          </div>
+
+          <div className="mb-8 grid grid-cols-3 gap-4">
+            <div className="rounded-[10px] border border-sand-200 bg-white p-4">
+              <p className="mb-1 text-[11px] font-medium uppercase tracking-widest text-gray-400">
+                Location
+              </p>
+              <p className="text-[15px] font-semibold text-navy-900">{cityName || countryName || '—'}</p>
+            </div>
+            <div className="rounded-[10px] border border-sand-200 bg-white p-4">
+              <p className="mb-1 text-[11px] font-medium uppercase tracking-widest text-gray-400">
+                Salary
+              </p>
+              <p className="text-[15px] font-semibold text-navy-900">{job.salary ?? '—'}</p>
+            </div>
+            <div className="rounded-[10px] border border-sand-200 bg-white p-4">
+              <p className="mb-1 text-[11px] font-medium uppercase tracking-widest text-gray-400">
+                Job Type
+              </p>
+              <p className="text-[15px] font-semibold text-navy-900">{job.jobType ?? '—'}</p>
             </div>
           </div>
 
-          {isExpired && (
-            <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800">
-              {locale === 'da' ? EXPIRED_BANNER_DA : EXPIRED_BANNER_EN}
-            </div>
+          <h2 className="font-heading mb-4 text-xl">Job Description</h2>
+          {showEnDescriptionNotice && (
+            <p className="mb-4 rounded-xl bg-blue-50 px-4 py-2.5 text-sm text-blue-800">
+              {DESCRIPTION_FALLBACK_DA}
+            </p>
           )}
-
-          <section className="prose prose-gray max-w-none">
-            {showEnDescriptionNotice && (
-              <p className="mb-4 rounded bg-blue-50 px-3 py-2 text-sm text-blue-800">
-                {DESCRIPTION_FALLBACK_DA}
+          <div className="prose prose-gray max-w-none text-[15px] leading-relaxed">
+            {bodyParagraphs.map((para, i) => (
+              <p key={i} className="mb-4">
+                {para}
               </p>
-            )}
-            {bodyParagraphs.length > 0 ? (
-              <div className="whitespace-pre-wrap">
-                {bodyParagraphs.map((para, i) => (
-                  <p key={i} className="mb-4">
-                    {para}
-                  </p>
-                ))}
-              </div>
-            ) : null}
-          </section>
+            ))}
+          </div>
         </main>
 
-        <aside className="space-y-6">
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <a
-              href={`/api/jobs/${slug}/apply?locale=${locale}`}
-              className="block w-full rounded bg-blue-600 px-4 py-3 text-center font-medium text-white hover:bg-blue-700"
-            >
-              Apply / View Job
-            </a>
-            <p className="mt-2 text-xs text-gray-500">
-              {locale === 'da' ? 'Du sendes videre til en partner-side' : 'You will be redirected to a partner site'}
-            </p>
-          </div>
-
-          <div>
-            <a
-              href={`/${locale}/jobs`}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              ← Back to jobs
-            </a>
-          </div>
-
-          {countrySlug && (
-            <div>
+        <aside>
+          <div className="sticky top-4 space-y-4">
+            <div className="rounded-2xl border border-sand-200 bg-white p-6">
               <a
-                href={`/${locale}/countries/${countrySlug}`}
-                className="text-sm text-blue-600 hover:underline"
+                href={`/api/jobs/${slug}/apply?locale=${locale}`}
+                className="mb-3 block w-full bg-primary-600 py-4 text-center font-bold text-white transition-colors hover:bg-primary-500 pill"
               >
-                Country guide: {countryName}
+                Apply / View Job ↗
               </a>
+              <p className="text-center text-xs leading-relaxed text-gray-400">
+                {locale === 'da'
+                  ? 'Du sendes videre til en partner-side. findjobabroad.com kan modtage provision.'
+                  : 'You will be redirected to a partner site. findjobabroad.com may earn a commission.'}
+              </p>
+              {job.company && (
+                <div className="mt-4 border-t border-sand-100 pt-4">
+                  <p className="text-sm font-semibold text-navy-900">{job.company}</p>
+                  <p className="mt-0.5 text-xs text-gray-500">{countryName}</p>
+                </div>
+              )}
             </div>
-          )}
 
-          {relatedJobs.length > 0 && (
-            <div>
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">Related jobs</h3>
-              <ul className="space-y-2">
-                {relatedJobs.map((related) => {
-                  const rCountry = typeof related.country === 'object' && related.country !== null ? (related.country as { name: string }) : null
-                  return (
-                    <li key={related.id}>
-                      <a
-                        href={`/${locale}/jobs/${related.slug}`}
-                        className="block rounded border border-gray-200 p-3 text-sm hover:bg-gray-50"
-                      >
-                        <span className="font-medium text-gray-900">{related.title}</span>
-                        <span className="mt-1 block text-gray-600">
-                          {rCountry?.name ?? ''} · {related.jobType ?? ''}
-                        </span>
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          )}
+            {relatedJobs.length > 0 && (
+              <div className="rounded-2xl border border-sand-200 bg-white p-5">
+                <h3 className="font-heading mb-4 text-sm font-bold">
+                  Similar Jobs in {countryName}
+                </h3>
+                <div className="space-y-0 divide-y divide-sand-100">
+                  {relatedJobs.map((related) => (
+                    <a
+                      key={related.id}
+                      href={`/${locale}/jobs/${related.slug}`}
+                      className="block py-3 transition-colors hover:text-primary-600"
+                    >
+                      <p className="text-sm font-semibold text-navy-900">{related.title}</p>
+                      <p className="mt-0.5 text-xs text-gray-500">
+                        {related.company ?? ''} · {related.jobType ?? ''}
+                      </p>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </aside>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-sand-200 bg-white p-4 lg:hidden">
+        <a
+          href={`/api/jobs/${slug}/apply?locale=${locale}`}
+          className="block w-full bg-primary-600 py-3.5 text-center font-bold text-white pill"
+        >
+          Apply / View Job ↗
+        </a>
       </div>
     </div>
   )

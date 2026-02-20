@@ -95,7 +95,7 @@ export default async function HomePage({ params }: Props) {
             "url('https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1920&q=80')",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-navy-900/80 to-navy-900/95" />
+        <div className="absolute inset-0 bg-linear-to-b from-navy-900/80 to-navy-900/95" />
         <div className="relative z-10 max-w-3xl mx-auto text-center px-4 pt-32 pb-16">
           <p className="text-amber-500 text-xs font-semibold tracking-widest uppercase mb-4">
             🌍 {t('hero.eyebrow')}
@@ -138,9 +138,9 @@ export default async function HomePage({ params }: Props) {
             <Link
               key={country.id}
               href={`/${locale}/countries/${country.slug}`}
-              className={`flex-shrink-0 w-[220px] h-[280px] rounded-[20px] overflow-hidden relative cursor-pointer bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
+              className={`shrink-0 w-[220px] h-[280px] rounded-[20px] overflow-hidden relative cursor-pointer bg-linear-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <span className="text-2xl" role="img" aria-hidden>
                   {country.flag ?? '🌍'}
@@ -174,10 +174,10 @@ export default async function HomePage({ params }: Props) {
               <Link
                 key={job.id}
                 href={`/${locale}/jobs/${job.slug}`}
-                className="flex-shrink-0 w-[260px] bg-white rounded-[20px] border border-sand-200 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                className="shrink-0 w-[260px] bg-white rounded-[20px] border border-sand-200 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
               >
                 <div
-                  className={`h-[150px] relative flex items-end p-3 bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
+                  className={`h-[150px] relative flex items-end p-3 bg-linear-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
                 >
                   {destination && (
                     <span className="bg-white/90 text-navy-700 text-xs font-semibold px-2 py-1 rounded">
@@ -235,7 +235,7 @@ export default async function HomePage({ params }: Props) {
               className="bg-white rounded-[20px] border border-sand-200 overflow-hidden hover:shadow-md transition-shadow"
             >
               <div
-                className={`h-[180px] relative bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
+                className={`h-[180px] relative bg-linear-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
               >
                 <span className="absolute top-3 left-3 bg-white/90 text-primary-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                   Country Guide
