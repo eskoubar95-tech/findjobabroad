@@ -1,7 +1,18 @@
 {
-  "nav": {
-    "jobs": "Jobs",
-    "guides": "Guider",
-    "blog": "Blog"
+  "nav": { "jobs": "Jobs", "guides": "Guider", "blog": "Blog" },
+  "jobs": {
+    "title": "Find job i udlandet",
+    "filters": {
+      "country": "Destinationsland",
+      "category": "Jobkategori",
+      "type": "Jobtype",
+      "languages": "Sprogkrav",
+      "allCountries": "Alle lande",
+      "allCategories": "Alle kategorier",
+      "allTypes": "Alle typer"
+    },
+    "card": { "viewJob": "Se job →" },
+    "pagination": { "previous": "← Forrige", "next": "Næste →" },
+    "noResults": "Ingen jobs fundet med dine filtre."
   }
 }

@@ -1,7 +1,18 @@
 {
-  "nav": {
-    "jobs": "Jobs",
-    "guides": "Guides",
-    "blog": "Blog"
+  "nav": { "jobs": "Jobs", "guides": "Guides", "blog": "Blog" },
+  "jobs": {
+    "title": "Browse Jobs Abroad",
+    "filters": {
+      "country": "Destination Country",
+      "category": "Job Category",
+      "type": "Job Type",
+      "languages": "Language Requirement",
+      "allCountries": "All Countries",
+      "allCategories": "All Categories",
+      "allTypes": "All Types"
+    },
+    "card": { "viewJob": "View Job →" },
+    "pagination": { "previous": "← Previous", "next": "Next →" },
+    "noResults": "No jobs found matching your filters."
   }
 }
