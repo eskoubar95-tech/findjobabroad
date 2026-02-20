@@ -54,6 +54,13 @@
   .card-radius {
     border-radius: 20px;
   }
+  .scrollbar-hide {
+    overflow: -moz-scrollbars-none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @theme inline {

@@ -1,33 +1,44 @@
 'use client'
 
-import { useLocale, useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
+import type { ReactNode } from 'react'
 
 const LOCALES = ['en', 'da'] as const
 
-export function LanguageSwitcher() {
+type Variant = 'light' | 'dark'
+
+export function LanguageSwitcher({ variant = 'light' }: { variant?: Variant }) {
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
 
-  function switchLocale(newLocale: string) {
-    const segments = pathname.split('/')
-    segments[1] = newLocale
-    router.push(segments.join('/'))
+  const otherLocale = LOCALES.find((l) => l !== locale) ?? 'en'
+  const segments = pathname.split('/')
+  segments[1] = otherLocale
+  const targetPath = segments.join('/')
+
+  function handleClick() {
+    router.push(targetPath)
   }
 
+  const lightClasses =
+    'border border-sand-200 rounded-full px-3 py-1.5 text-sm font-semibold text-navy-700 hover:border-primary-600 hover:text-primary-600 transition-colors'
+  const darkClasses =
+    'border border-white/50 rounded-full px-3 py-1.5 text-sm font-semibold text-white hover:border-white transition-colors'
+  const className = variant === 'dark' ? darkClasses : lightClasses
+
+  const label: ReactNode = (
+    <>
+      <span className={locale === 'en' ? 'font-bold' : 'opacity-50'}>EN</span>
+      <span className="mx-1">/</span>
+      <span className={locale === 'da' ? 'font-bold' : 'opacity-50'}>DA</span>
+    </>
+  )
+
   return (
-    <div className="flex gap-2">
-      {LOCALES.map((loc) => (
-        <button
-          key={loc}
-          type="button"
-          onClick={() => switchLocale(loc)}
-          className={locale === loc ? 'font-bold' : undefined}
-        >
-          {loc.toUpperCase()}
-        </button>
-      ))}
-    </div>
+    <button type="button" onClick={handleClick} className={className}>
+      {label}
+    </button>
   )
 }

@@ -2,21 +2,50 @@
   "nav": { "jobs": "Jobs", "countries": "Lande", "cities": "Byer", "blog": "Blog" },
   "home": {
     "hero": {
+      "eyebrow": "Arbejd i udlandet",
       "title": "Find dit drømmejob i udlandet",
       "subtitle": "Opdag muligheder og guider til at arbejde i destinationer verden over.",
       "browseJobs": "Se jobs",
       "exploreCountries": "Udforsk lande"
     },
+    "searchPlaceholder": "Jobtitel eller nøgleord",
+    "allCountries": "Alle lande",
+    "searchBtn": "Søg jobs →",
+    "popularDestinations": "Populære destinationer",
+    "latestJobs": "Seneste jobs",
+    "guides": "Lande- og byguider",
+    "viewAll": "Se alle →",
+    "browseAll": "Gennemse alle →",
+    "allGuides": "Alle guider →",
+    "stats": { "jobs": "Aktive jobs", "countries": "Lande", "languages": "Sprog" },
     "featuredDestinations": "Udvalgte destinationer",
     "featuredJobs": "Udvalgte jobs",
     "viewAllJobs": "Se alle jobs →"
   },
-  "blog": {
-    "title": "Blog",
-    "readMore": "Læs mere →",
-    "notAvailable": "Artiklen er ikke tilgængelig på dansk",
-    "readInEnglish": "Læs på engelsk →"
+  "footer": {
+    "tagline": "Find dit næste eventyr i udlandet",
+    "copyright": "© 2025 findjobabroad.com"
   },
-  "jobs": {"title":"Find job i udlandet","filters":{"country":"Destinationsland","category":"Jobkategori","type":"Jobtype","languages":"Sprogkrav","allCountries":"Alle lande","allCategories":"Alle kategorier","allTypes":"Alle typer"},"card":{"viewJob":"Se job →"},"pagination":{"previous":"← Forrige","next":"Næste →"},"noResults":"Ingen jobs fundet med dine filtre."},
-  "guides": {"avgSalary":"Gns. månedsløn","costOfLiving":"Leveomkostninger","visaType":"Arbejdsvisum","topIndustries":"Topbrancher","citiesIn":"Byer i {country}","jobsIn":"Jobs i {destination}","seeAllJobs":"Se alle jobs i {destination} →","notAvailable":"Guide ikke tilgængelig på dansk","notAvailableDesc":"Denne guide er endnu ikke oversat til dansk.","readInEnglish":"Læs på engelsk →","onThisPage":"På denne side","otherCountries":"Andre lande"}
+  "blog": { "title": "Blog", "readMore": "Læs mere →", "notAvailable": "Artiklen er ikke tilgængelig på dansk", "readInEnglish": "Læs på engelsk →" },
+  "jobs": {
+    "title": "Find job i udlandet",
+    "filters": { "country": "Destinationsland", "category": "Jobkategori", "type": "Jobtype", "languages": "Sprogkrav", "allCountries": "Alle lande", "allCategories": "Alle kategorier", "allTypes": "Alle typer" },
+    "card": { "viewJob": "Se job →" },
+    "pagination": { "previous": "← Forrige", "next": "Næste →" },
+    "noResults": "Ingen jobs fundet med dine filtre."
+  },
+  "guides": {
+    "avgSalary": "Gns. månedsløn",
+    "costOfLiving": "Leveomkostninger",
+    "visaType": "Arbejdsvisum",
+    "topIndustries": "Topbrancher",
+    "citiesIn": "Byer i {country}",
+    "jobsIn": "Jobs i {destination}",
+    "seeAllJobs": "Se alle jobs i {destination} →",
+    "notAvailable": "Guide ikke tilgængelig på dansk",
+    "notAvailableDesc": "Denne guide er endnu ikke oversat til dansk.",
+    "readInEnglish": "Læs på engelsk →",
+    "onThisPage": "På denne side",
+    "otherCountries": "Andre lande"
+  }
 }

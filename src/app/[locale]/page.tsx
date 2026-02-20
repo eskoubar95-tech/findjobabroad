@@ -3,9 +3,16 @@ import config from '@payload-config'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { cn } from '@/lib/utils'
 import type { Country, Job } from '@/payload-types'
 import { websiteJsonLd } from '@/lib/jsonld'
+import { HeroSearch } from '@/components/HeroSearch'
+
+const CARD_GRADIENTS = [
+  'from-blue-600 to-blue-900',
+  'from-primary-600 to-red-900',
+  'from-green-600 to-green-900',
+  'from-purple-600 to-purple-900',
+] as const
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -49,7 +56,7 @@ export default async function HomePage({ params }: Props) {
       collection: 'countries',
       locale: locale as 'en' | 'da',
       where: { _status: { equals: 'published' } },
-      limit: 6,
+      limit: 8,
       depth: 0,
     }),
     payload.find({
@@ -61,7 +68,7 @@ export default async function HomePage({ params }: Props) {
           { _status: { equals: 'published' } },
         ],
       },
-      limit: 6,
+      limit: 10,
       sort: '-createdAt',
       depth: 1,
     }),
@@ -79,91 +86,169 @@ export default async function HomePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(baseUrl)) }}
       />
-      <section className="px-4 py-12 md:py-16 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">{t('hero.title')}</h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-          {t('hero.subtitle')}
-        </p>
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link
-            href={`/${locale}/jobs`}
-            className={cn(
-              'inline-block px-6 py-3 rounded-lg font-medium',
-              'bg-blue-600 text-white hover:bg-blue-700'
-            )}
-          >
-            {t('hero.browseJobs')}
-          </Link>
-          <Link
-            href={`/${locale}/countries`}
-            className={cn(
-              'inline-block px-6 py-3 rounded-lg font-medium border border-gray-300',
-              'hover:bg-gray-50'
-            )}
-          >
-            {t('hero.exploreCountries')}
-          </Link>
+
+      {/* Section 1 — Hero */}
+      <section
+        className="relative min-h-[90vh] flex flex-col justify-center bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1920&q=80')",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-900/80 to-navy-900/95" />
+        <div className="relative z-10 max-w-3xl mx-auto text-center px-4 pt-32 pb-16">
+          <p className="text-amber-500 text-xs font-semibold tracking-widest uppercase mb-4">
+            🌍 {t('hero.eyebrow')}
+          </p>
+          <h1 className="text-5xl md:text-6xl text-white leading-tight mb-4">
+            {t('hero.title')}
+          </h1>
+          <p className="text-white/70 text-lg mb-10">{t('hero.subtitle')}</p>
+          <HeroSearch countries={countries.map((c) => ({ slug: c.slug, name: c.name }))} />
+          <div className="flex gap-8 justify-center mt-8 text-white">
+            <div className="text-center">
+              <span className="font-bold text-2xl block">12,400+</span>
+              <span className="text-white/60 text-xs">{t('stats.jobs')}</span>
+            </div>
+            <div className="text-center">
+              <span className="font-bold text-2xl block">40+</span>
+              <span className="text-white/60 text-xs">{t('stats.countries')}</span>
+            </div>
+            <div className="text-center">
+              <span className="font-bold text-2xl block">8+</span>
+              <span className="text-white/60 text-xs">{t('stats.languages')}</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="px-4 py-8 max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">{t('featuredDestinations')}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {countries.map((country) => (
+      {/* Section 2 — Popular Destinations Carousel */}
+      <section className="py-16 px-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-navy-900">{t('popularDestinations')}</h2>
+          <Link
+            href={`/${locale}/countries`}
+            className="text-primary-600 hover:text-primary-500 font-semibold text-sm"
+          >
+            {t('viewAll')}
+          </Link>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
+          {countries.map((country, i) => (
             <Link
               key={country.id}
               href={`/${locale}/countries/${country.slug}`}
-              className={cn(
-                'block p-4 rounded-lg border border-gray-200',
-                'hover:border-gray-300 hover:shadow-sm'
-              )}
+              className={`flex-shrink-0 w-[220px] h-[280px] rounded-[20px] overflow-hidden relative cursor-pointer bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
             >
-              <span className="text-2xl" role="img" aria-hidden>
-                {country.flag ?? '🌍'}
-              </span>
-              <h3 className="font-semibold mt-2">{country.name}</h3>
-              {country.topIndustries && (
-                <p className="text-sm text-gray-600 mt-1">{country.topIndustries}</p>
-              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <span className="text-2xl" role="img" aria-hidden>
+                  {country.flag ?? '🌍'}
+                </span>
+                <h3 className="text-white font-heading font-bold text-lg mt-1">{country.name}</h3>
+                <span className="inline-block mt-2 px-2 py-0.5 bg-white/20 text-white text-xs rounded">
+                  Jobs
+                </span>
+              </div>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="px-4 py-8 max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">{t('featuredJobs')}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobs.map((job) => (
-            <Link
-              key={job.id}
-              href={`/${locale}/jobs/${job.slug}`}
-              className={cn(
-                'block p-4 rounded-lg border border-gray-200',
-                'hover:border-gray-300 hover:shadow-sm'
-              )}
-            >
-              <h3 className="font-semibold">{job.title}</h3>
-              {job.company && <p className="text-sm text-gray-600">{job.company}</p>}
-              {getDestination(job) && (
-                <p className="text-sm text-gray-500 mt-1">{getDestination(job)}</p>
-              )}
-              {job.jobType && (
-                <span
-                  className={cn(
-                    'inline-block mt-2 px-2 py-0.5 text-xs rounded',
-                    'bg-gray-100 text-gray-700'
-                  )}
+      {/* Section 3 — Latest Jobs Carousel */}
+      <section className="py-16 px-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-navy-900">{t('latestJobs')}</h2>
+          <Link
+            href={`/${locale}/jobs`}
+            className="text-primary-600 hover:text-primary-500 font-semibold text-sm"
+          >
+            {t('browseAll')}
+          </Link>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
+          {jobs.map((job, i) => {
+            const destination = getDestination(job)
+            const country = typeof job.country === 'object' && job.country ? job.country : null
+            return (
+              <Link
+                key={job.id}
+                href={`/${locale}/jobs/${job.slug}`}
+                className="flex-shrink-0 w-[260px] bg-white rounded-[20px] border border-sand-200 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+              >
+                <div
+                  className={`h-[150px] relative flex items-end p-3 bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
                 >
-                  {job.jobType}
+                  {destination && (
+                    <span className="bg-white/90 text-navy-700 text-xs font-semibold px-2 py-1 rounded">
+                      {destination}
+                      {country?.name && typeof country === 'object' ? `, ${country.name}` : ''}
+                    </span>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-navy-900 line-clamp-2">{job.title}</h3>
+                  {job.company && (
+                    <p className="text-sm text-navy-600 mt-0.5">{job.company}</p>
+                  )}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {job.jobType && (
+                      <span className="px-2 py-0.5 bg-sand-100 text-navy-700 text-xs rounded">
+                        {job.jobType}
+                      </span>
+                    )}
+                    {Array.isArray(job.requiredLanguages) &&
+                      job.requiredLanguages.slice(0, 2).map((lang, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 bg-primary-100 text-primary-700 text-xs rounded"
+                        >
+                          {typeof lang === 'object' && lang !== null && 'language' in lang
+                            ? String((lang as { language?: string }).language ?? '')
+                            : String(lang)}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* Section 4 — Country & City Guides Grid */}
+      <section className="py-16 px-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-navy-900">{t('guides')}</h2>
+          <Link
+            href={`/${locale}/countries`}
+            className="text-primary-600 hover:text-primary-500 font-semibold text-sm"
+          >
+            {t('allGuides')}
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {countries.slice(0, 6).map((country, i) => (
+            <Link
+              key={country.id}
+              href={`/${locale}/countries/${country.slug}`}
+              className="bg-white rounded-[20px] border border-sand-200 overflow-hidden hover:shadow-md transition-shadow"
+            >
+              <div
+                className={`h-[180px] relative bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`}
+              >
+                <span className="absolute top-3 left-3 bg-white/90 text-primary-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                  Country Guide
                 </span>
-              )}
+              </div>
+              <div className="p-5">
+                <h3 className="font-heading font-bold text-navy-900 text-lg">{country.name}</h3>
+                <p className="text-sm text-navy-600 mt-1">
+                  {country.topIndustries ?? country.costOfLiving ?? ''}
+                </p>
+              </div>
             </Link>
           ))}
-        </div>
-        <div className="mt-6">
-          <Link href={`/${locale}/jobs`} className="text-blue-600 hover:underline font-medium">
-            {t('viewAllJobs')}
-          </Link>
         </div>
       </section>
     </>

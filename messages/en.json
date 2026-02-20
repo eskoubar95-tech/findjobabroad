@@ -2,21 +2,50 @@
   "nav": { "jobs": "Jobs", "countries": "Countries", "cities": "Cities", "blog": "Blog" },
   "home": {
     "hero": {
+      "eyebrow": "Work abroad",
       "title": "Find Your Dream Job Abroad",
       "subtitle": "Discover opportunities and guides for working in destinations worldwide.",
       "browseJobs": "Browse Jobs",
       "exploreCountries": "Explore Countries"
     },
+    "searchPlaceholder": "Job title or keyword",
+    "allCountries": "All Countries",
+    "searchBtn": "Search Jobs →",
+    "popularDestinations": "Popular Destinations",
+    "latestJobs": "Latest Jobs",
+    "guides": "Country & City Guides",
+    "viewAll": "View all →",
+    "browseAll": "Browse all →",
+    "allGuides": "All guides →",
+    "stats": { "jobs": "Active Jobs", "countries": "Countries", "languages": "Languages" },
     "featuredDestinations": "Featured Destinations",
     "featuredJobs": "Featured Jobs",
     "viewAllJobs": "View all jobs →"
   },
-  "blog": {
-    "title": "Blog",
-    "readMore": "Read more →",
-    "notAvailable": "Article not available in Danish",
-    "readInEnglish": "Read in English →"
+  "footer": {
+    "tagline": "Find your next adventure abroad",
+    "copyright": "© 2025 findjobabroad.com"
   },
-  "jobs": {"title":"Browse Jobs Abroad","filters":{"country":"Destination Country","category":"Job Category","type":"Job Type","languages":"Language Requirement","allCountries":"All Countries","allCategories":"All Categories","allTypes":"All Types"},"card":{"viewJob":"View Job →"},"pagination":{"previous":"← Previous","next":"Next →"},"noResults":"No jobs found matching your filters."},
-  "guides": {"avgSalary":"Avg. Monthly Salary","costOfLiving":"Cost of Living","visaType":"Work Visa","topIndustries":"Top Industries","citiesIn":"Cities in {country}","jobsIn":"Jobs in {destination}","seeAllJobs":"See all jobs in {destination} →","notAvailable":"Guide not available in Danish","notAvailableDesc":"This guide has not been translated to Danish yet.","readInEnglish":"Read in English →","onThisPage":"On this page","otherCountries":"Other Countries"}
+  "blog": { "title": "Blog", "readMore": "Read more →", "notAvailable": "Article not available in Danish", "readInEnglish": "Read in English →" },
+  "jobs": {
+    "title": "Browse Jobs Abroad",
+    "filters": { "country": "Destination Country", "category": "Job Category", "type": "Job Type", "languages": "Language Requirement", "allCountries": "All Countries", "allCategories": "All Categories", "allTypes": "All Types" },
+    "card": { "viewJob": "View Job →" },
+    "pagination": { "previous": "← Previous", "next": "Next →" },
+    "noResults": "No jobs found matching your filters."
+  },
+  "guides": {
+    "avgSalary": "Avg. Monthly Salary",
+    "costOfLiving": "Cost of Living",
+    "visaType": "Work Visa",
+    "topIndustries": "Top Industries",
+    "citiesIn": "Cities in {country}",
+    "jobsIn": "Jobs in {destination}",
+    "seeAllJobs": "See all jobs in {destination} →",
+    "notAvailable": "Guide not available in Danish",
+    "notAvailableDesc": "This guide has not been translated to Danish yet.",
+    "readInEnglish": "Read in English →",
+    "onThisPage": "On this page",
+    "otherCountries": "Other Countries"
+  }
 }
