@@ -26,7 +26,7 @@ export default buildConfig({
     components: {
       views: {
         sync: {
-          Component: '/src/app/(payload)/admin/sync/page#default',
+          Component: '@/app/(payload)/admin/sync/page#default',
           path: '/sync',
           meta: { title: 'Job Sync' },
         },
